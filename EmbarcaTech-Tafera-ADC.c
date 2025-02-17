@@ -16,7 +16,7 @@ const uint8_t led_green_pino = 11;
 volatile bool estado_red = false;
 volatile bool estado_blue = false;
 volatile bool estado_green = false;
-volatile bool estado_trava_led = true;
+volatile bool estado_trava_led = false;
 
 //Botões
 const uint8_t btn_a = 5;
@@ -35,6 +35,7 @@ const uint8_t joystick_pino_Y = 27;
 
 //Variáveis blobais
 volatile uint32_t ultimo_tempo = 0;
+volatile bool cor = true;
 
 //Protótipos
 void iniciar_pinos();
@@ -60,15 +61,40 @@ int main()
     ssd1306_send_data(&ssd);
     ssd1306_fill(&ssd, false);
     ssd1306_send_data(&ssd);
-    bool cor = true;
 
-    while (true) {
-        if(estado_trava_led == true){
-            
-        }
-        else{
+    char ponto = 'A';
+    uint16_t valor_adc_X, valor_adc_Y;
+    char str_x[5], str_y[5];
 
+    while(true){
+        adc_select_input(0);
+        valor_adc_X = adc_read();
+        adc_select_input(1);
+        valor_adc_Y = adc_read();
+
+        if(estado_trava_led == false){
+            if(valor_adc_X == 2047){
+                pwm_set_gpio_level(led_red_pino, 0);
+            }
+            else{
+                pwm_set_gpio_level(led_red_pino, valor_adc_X);
+            }
+    
+            if(valor_adc_Y == 2047){
+                pwm_set_gpio_level(led_blue_pino, 0);
+            }
+            else{
+                pwm_set_gpio_level(led_blue_pino, valor_adc_Y);
+            }
         }
+
+        sprintf(str_x, "%d", valor_adc_X);
+        sprintf(str_y, "%d", valor_adc_Y);
+
+        ssd1306_fill(&ssd, !cor);
+        ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor);
+        ssd1306_draw_char(&ssd, ponto, 60, 27);
+        ssd1306_send_data(&ssd);
 
         gpio_put(led_green_pino, estado_green);
 
@@ -113,6 +139,7 @@ void iniciar_pinos(){
 void gpio_irq_handler(uint gpio, uint32_t events){
     uint32_t tempo_atual = to_ms_since_boot(get_absolute_time());
     if(tempo_atual - ultimo_tempo > 200){
+        ultimo_tempo = tempo_atual;
         if(gpio == 5){
             estado_trava_led = !estado_trava_led;
         }
@@ -121,6 +148,7 @@ void gpio_irq_handler(uint gpio, uint32_t events){
         }
         else if(gpio == 22){
             estado_green = !estado_green;
+            cor = !cor;
         }
     }
 }
