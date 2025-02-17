@@ -64,7 +64,7 @@ int main()
 
     char ponto = 'A';
     uint16_t valor_adc_X, valor_adc_Y;
-    char str_x[5], str_y[5];
+    uint16_t posicao_X,posicao_Y;
 
     while(true){
         adc_select_input(0);
@@ -88,15 +88,15 @@ int main()
             }
         }
 
-        sprintf(str_x, "%d", valor_adc_X);
-        sprintf(str_y, "%d", valor_adc_Y);
+        gpio_put(led_green_pino, estado_green);
+
+        posicao_X = valor_adc_X / 36;
+        posicao_Y = valor_adc_Y / 82;
 
         ssd1306_fill(&ssd, !cor);
         ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor);
-        ssd1306_draw_char(&ssd, ponto, 60, 27);
+        ssd1306_draw_char(&ssd, ponto, posicao_X, posicao_Y);
         ssd1306_send_data(&ssd);
-
-        gpio_put(led_green_pino, estado_green);
 
         sleep_ms(500);
     }
