@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(EmbarcaTech-Tafera-ADC EmbarcaTech-Tafera-ADC.c )
+add_executable(EmbarcaTech-Tafera-ADC EmbarcaTech-Tafera-ADC.c bibliotecas/ssd1306.c)
 
 pico_set_program_name(EmbarcaTech-Tafera-ADC "EmbarcaTech-Tafera-ADC")
 pico_set_program_version(EmbarcaTech-Tafera-ADC "0.1")
@@ -46,6 +46,9 @@ pico_enable_stdio_usb(EmbarcaTech-Tafera-ADC 1)
 
 # Add the standard library to the build
 target_link_libraries(EmbarcaTech-Tafera-ADC
+        hardware_i2c
+        hardware_pwm
+        hardware_adc
         pico_stdlib)
 
 # Add the standard include files to the build
