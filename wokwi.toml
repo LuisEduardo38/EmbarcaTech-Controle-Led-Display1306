@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/EmbarcaTech-Tafera-ADC.uf2'
+elf = 'build/EmbarcaTech-Tafera-ADC.elf'
