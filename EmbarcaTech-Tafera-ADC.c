@@ -16,6 +16,7 @@ const uint8_t led_green_pino = 11;
 volatile bool estado_red = false;
 volatile bool estado_blue = false;
 volatile bool estado_green = false;
+volatile bool estado_trava_led = true;
 
 //Botões
 const uint8_t btn_a = 5;
@@ -62,21 +63,37 @@ int main()
     bool cor = true;
 
     while (true) {
-        printf("Hello, world!\n");
-        sleep_ms(1000);
+        if(estado_trava_led == true){
+            
+        }
+        else{
+
+        }
+
+        gpio_put(led_green_pino, estado_green);
+
+        sleep_ms(500);
     }
 }
 
 void iniciar_pinos(){
-    gpio_init(led_red_pino);
-    gpio_init(led_blue_pino);
     gpio_init(led_green_pino);
-    gpio_set_dir(led_red_pino, GPIO_OUT);
-    gpio_set_dir(led_blue_pino, GPIO_OUT);
     gpio_set_dir(led_green_pino, GPIO_OUT);
-    gpio_put(led_red_pino, estado_red);
-    gpio_put(led_blue_pino, estado_blue);
     gpio_put(led_green_pino, estado_green);
+
+    gpio_set_function(led_red_pino, GPIO_FUNC_PWM);
+    gpio_set_function(led_blue_pino, GPIO_FUNC_PWM);
+    uint slice_red, slice_blue;
+    slice_red = pwm_gpio_to_slice_num(led_red_pino);
+    slice_blue = pwm_gpio_to_slice_num(led_blue_pino);
+    pwm_set_clkdiv(led_red_pino, 4.0);
+    pwm_set_clkdiv(led_blue_pino, 4.0);
+    pwm_set_wrap(slice_red, 4000);
+    pwm_set_wrap(slice_blue, 4000);
+    pwm_set_gpio_level(led_red_pino, 100);
+    pwm_set_gpio_level(led_blue_pino, 100);
+    pwm_set_enabled(slice_red, true);
+    pwm_set_enabled(slice_blue, true);
 
     gpio_init(btn_a);
     gpio_init(btn_b);
@@ -97,13 +114,13 @@ void gpio_irq_handler(uint gpio, uint32_t events){
     uint32_t tempo_atual = to_ms_since_boot(get_absolute_time());
     if(tempo_atual - ultimo_tempo > 200){
         if(gpio == 5){
-            
+            estado_trava_led = !estado_trava_led;
         }
         else if(gpio == 6){
             reset_usb_boot(0, 0);
         }
-        else if(gpio == 2){
-
+        else if(gpio == 22){
+            estado_green = !estado_green;
         }
     }
 }
