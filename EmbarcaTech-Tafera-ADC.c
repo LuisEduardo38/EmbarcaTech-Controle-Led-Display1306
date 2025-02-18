@@ -99,8 +99,10 @@ int main(){
         gpio_put(led_green_pino, estado_green);
 
         //Convertendo os valores do joystick para valores para serem usando como parâmetros de posicão no display
-        posicao_X = valor_adc_X / 36;
-        posicao_Y = valor_adc_Y / 82;
+        // Invertendo eixo X e Y
+        posicao_X = (4095 - valor_adc_X) / 36;
+        posicao_Y = (4095 - valor_adc_Y) / 82;
+
 
         //Exibir o ponto na posição em que está o josytick
         ssd1306_fill(&ssd, !cor);
