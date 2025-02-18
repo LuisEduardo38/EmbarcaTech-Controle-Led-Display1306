@@ -94,6 +94,10 @@ int main(){
                 pwm_set_gpio_level(led_blue_pino, valor_adc_Y);
             }
         }
+        else{
+            pwm_set_gpio_level(led_red_pino, 0);
+            pwm_set_gpio_level(led_blue_pino, 0);
+        }
 
         //Liga ou desligar o led GREEN
         gpio_put(led_green_pino, estado_green);
